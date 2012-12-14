@@ -1,12 +1,4 @@
 class MoviesController < ApplicationController
-  def all_ratings
-    @all_ratings
-  end
-
-  def initialize
-    @all_ratings = ['G','PG','PG-13','NC-17','R']
-  end
-
   def show
     id = params[:id] # retrieve movie ID from URI route
     @movie = Movie.find(id) # look up movie by unique ID
