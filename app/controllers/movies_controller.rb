@@ -4,7 +4,7 @@ class MoviesController < ApplicationController
   end
 
   def initialize
-    @all_ratings = ['G','PG','PG-13','R']
+    @all_ratings = ['G','PG','PG-13','NC-17','R']
   end
 
   def show
@@ -14,6 +14,15 @@ class MoviesController < ApplicationController
   end
 
   def index
+    @all_ratings = Movie.all_ratings
+    @selected_ratings = []
+    if !params[:ratings].nil?
+      params[:ratings].each_key do |key|
+      @selected_ratings << key
+    end
+    elsif
+      @selected_ratings = @all_ratings
+    end
     @sort = params[:sort]
     @movies = Movie.all(:order => @sort)
     if(@sort == 'title')
