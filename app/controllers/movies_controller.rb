@@ -4,9 +4,11 @@ class MoviesController < ApplicationController
     @movie = Movie.find(id) # look up movie by unique ID
     # will render app/views/movies/show.<extension> by default
   end
-
   def index
     @all_ratings = Movie.all_ratings
+    #@rating = params[:ratings]
+    rate = params[:ratings]
+    @sort = params[:sort]
     @selected_ratings = []
     if !params[:ratings].nil?
       params[:ratings].each_key do |key|
@@ -15,8 +17,13 @@ class MoviesController < ApplicationController
     elsif
       @selected_ratings = @all_ratings
     end
-    @sort = params[:sort]
-    @movies = Movie.all(:order => @sort)
+    if (rate != nil)
+      rate_array=rate.keys
+      @movies = Movie.find(:all,:conditions => ["rating IN (?)",rate_array],:order => @sort)
+    elsif
+      @movies = Movie.all(:order => @sort)
+    end
+    
     if(@sort == 'title')
        @title = 'hilite'
     end
