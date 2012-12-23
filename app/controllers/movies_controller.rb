@@ -4,33 +4,57 @@ class MoviesController < ApplicationController
     @movie = Movie.find(id) # look up movie by unique ID
     # will render app/views/movies/show.<extension> by default
   end
+
   def index
     @all_ratings = Movie.all_ratings
-    #@rating = params[:ratings]
-    rate = params[:ratings]
+    rating = params[:ratings]
+    #@rate = params[:ratings]
+    if !session[:checked].nil?
+      if rating.nil?
+         rating =session[:checked]
+      else
+         rating = params[:ratings]
+         session[:checked] = rating
+      end
+    else
+      session[:checked] = rating
+    end
     @sort = params[:sort]
     @selected_ratings = []
-    if !params[:ratings].nil?
-      params[:ratings].each_key do |key|
-      @selected_ratings << key
+    if !rating.nil?
+       rating.each_key do |key|
+       @selected_ratings << key
     end
     elsif
       @selected_ratings = @all_ratings
     end
-    if (rate != nil)
-      rate_array=rate.keys
-      @movies = Movie.find(:all,:conditions => ["rating IN (?)",rate_array],:order => @sort)
+
+    if @sort == 'title'
+         @title = 'hilite'
+         session[:clicked] = 'title'
+    end
+    if @sort == 'release_date'
+         @release_date = 'hilite'
+         session[:clicked] = 'release_date'
+    end
+
+    if rating != nil
+      rating_array=rating.keys
+      if session[:clicked] == 'title'
+        @sort = 'title'
+        @title = 'hilite'
+      end
+      if session[:clicked] == 'release_date'
+        @sort = 'release_date'
+        @release_date = 'hilite'
+      end
+      @movies = Movie.find(:all,:conditions => ["rating IN (?)",rating_array],:order => @sort)
     elsif
       @movies = Movie.all(:order => @sort)
     end
     
-    if(@sort == 'title')
-       @title = 'hilite'
-    end
-    if(@sort == 'release_date')
-       @release_date = 'hilite'
-    end
   end
+
 
   def new
     # default: render 'new' template
